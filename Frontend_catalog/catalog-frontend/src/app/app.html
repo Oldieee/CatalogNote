@@ -1,0 +1,72 @@
+<div class="container">
+  <h1>🎓 Gestiune Catalog Studenți</h1>
+
+  <form (ngSubmit)="adaugaStudent()" #formular="ngForm" class="student-form">
+    <div class="input-group">
+      <label>Nume:</label>
+      <input type="text" name="nume" [(ngModel)]="studentNou.nume" placeholder="Introduceți numele" required>
+    </div>
+    <div class="input-group">
+      <label>Prenume:</label>
+      <input type="text" name="prenume" [(ngModel)]="studentNou.prenume" placeholder="Introduceți prenumele" required>
+    </div>
+    <div class="input-group">
+      <label>Email:</label>
+      <input type="email" name="email" [(ngModel)]="studentNou.email" placeholder="exemplu@email.com" required email>
+    </div>
+
+    <button type="submit" [disabled]="seIncarca || !formular.form.valid" class="btn-save">
+      <span *ngIf="!seIncarca">➕ Adaugă Student</span>
+      <span *ngIf="seIncarca">⏳ Se salvează... vă rugăm așteptați</span>
+    </button>
+  </form>
+
+  <hr>
+
+  <h2>Lista Studenților înregistrați</h2>
+
+  <table class="student-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nume Complet</th>
+        <th>Email</th>
+        <th>Acțiuni</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of listaStudenti">
+        <td>{{ s.id }}</td>
+        <td>{{ s.nume }} {{ s.prenume }}</td>
+        <td>{{ s.email }}</td>
+        <td>
+          <button (click)="selecteazaStudent(s)" class="btn-note" style="background-color: #2196F3; color: white; margin-right: 5px;">
+            📝 Note
+          </button>
+          
+          <button (click)="s.id !== undefined && stergeStudent(s.id)" class="btn-delete" [disabled]="seIncarca">
+            🗑️ Șterge
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <p *ngIf="listaStudenti.length === 0 && !seIncarca">Nu sunt studenți în bază.</p>
+
+  <div *ngIf="studentSelectat" class="note-section" style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 5px solid #2196F3;">
+    <h3>Adaugă notă pentru: <strong>{{ studentSelectat.nume }} {{ studentSelectat.prenume }}</strong></h3>
+    
+    <form (ngSubmit)="salveazaNota()" #formNota="ngForm">
+      <div class="input-group" style="margin-bottom: 10px;">
+        <input type="number" name="nota" [(ngModel)]="notaNoua.nota" placeholder="Nota (1-10)" min="1" max="10" required style="padding: 8px;">
+        <input type="text" name="disciplina" [(ngModel)]="notaNoua.disciplina" placeholder="Disciplina" required style="padding: 8px; margin-left: 10px;">
+      </div>
+
+      <button type="submit" [disabled]="seIncarca || !formNota.form.valid" class="btn-save-note">
+        {{ seIncarca ? '⏳ Se salvează...' : '💾 Salvează Nota' }}
+      </button>
+      <button type="button" (click)="studentSelectat = null" style="margin-left: 10px;">❌ Anulează</button>
+    </form>
+  </div>
+</div>

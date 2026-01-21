@@ -3,7 +3,7 @@ package com.oldiee.CatalogOnline;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/students")
 public class StudentController {
@@ -31,14 +31,9 @@ public class StudentController {
         return studentRepository.save(student);
 
     }
-    @DeleteMapping("/note/{notaId}")
-    public String deleteNota(@PathVariable Long notaId){
-        if(notaRepository.existsById(notaId)){
-            notaRepository.deleteById(notaId);
-            return "Nota cu ID-ul " + notaId + " a fost ștearsă cu succes! ";
-        }else{
-            return "Eroare: Nota cu ID-ul " + notaId + " nu există. ";
-        }
+    @DeleteMapping("/{studentId}")
+    public void deleteStudent(@PathVariable Long studentId) {
+    studentRepository.deleteById(studentId);
     }
     @GetMapping("/{studentId}/note")
     public List<Nota>getToateNotele(@PathVariable Long studentId){
