@@ -1,6 +1,9 @@
 package com.oldiee.CatalogOnline;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +14,16 @@ public class Student
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @NotBlank(message = "Numele este obligatoriu")
+    @Size(min = 2, message = "Numele este prea scurt")
     private String nume;
+    @NotBlank(message = "Prenumele este obligatoriu")
+    @Size(min = 2, message = "Prenumele este prea scurt")
     private String  prenume;
+    @Email(message = "Email-ul trebuie să fie valid")
+    @NotBlank(message = "Email-ul este obligatoriu")
+    @Column(unique = true)
     private String email;
     private String password;
     @OneToMany(mappedBy = "student",cascade = CascadeType.ALL)

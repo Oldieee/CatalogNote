@@ -1,5 +1,8 @@
 package com.oldiee.CatalogOnline;
 
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -8,32 +11,44 @@ import java.util.List;
 @RequestMapping("/api/students")
 public class StudentController {
     private final StudentRepository studentRepository;
-    private final NotaRepository notaRepository;
+
     private final StudentService studentService;
 
 
     public StudentController(StudentRepository studentRepository,
-                             NotaRepository notaRepository,
+
                              StudentService studentService) {
         this.studentRepository = studentRepository;
-        this.notaRepository = notaRepository;
+
         this.studentService = studentService;
     }
 
 
     @GetMapping
-    public List<Student> getAllStudents() {
-        return studentRepository.findAll();
+    public ResponseEntity<List<Student>> getAllStudents() {
+        List<Student>students=studentRepository.findAll();
+        return  ResponseEntity.ok(students);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<Student>getStudentById(@PathVariable Long id){
+        return studentRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public Student addStudent(@RequestBody Student student) {
-        return studentRepository.save(student);
+    public ResponseEntity<Student> addStudent(@Valid  @RequestBody Student student) {
+        Student savedStudent=studentRepository.save(student);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedStudent);
 
     }
-    @DeleteMapping("/{studentId}")
-    public void deleteStudent(@PathVariable Long studentId) {
-    studentRepository.deleteById(studentId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteStudent(@PathVariable Long id) {
+        if(!studentRepository.existsById(id)){
+            return ResponseEntity.notFound().build();
+        }
+        studentRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 
 
@@ -41,7 +56,12 @@ public class StudentController {
 
 
     @GetMapping("/{studentId}/media")
-    public double getMedieStudent(@PathVariable Long studentId) {
-        return studentService.calculeazaMedia(studentId);
+    public ResponseEntity<Double> getMedieStudent(@PathVariable Long studentId) {
+        try{
+            double medie=studentService.calculeazaMedia(studentId);
+            return ResponseEntity.ok(medie);
+        }catch (RuntimeException e){
+            return  ResponseEntity.notFound().build();
+        }
     }
 }
